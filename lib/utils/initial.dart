@@ -6,6 +6,8 @@ import 'package:simple_permissions/simple_permissions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import '../services/system.dart';
+import '../services/file.dart';
+import '../utils/constants.dart';
 
 /// initialize the app
 Future<Null> initial() async {
@@ -15,8 +17,10 @@ Future<Null> initial() async {
   /// get service instance
   SystemService service = new SystemService(prefs: prefs);
 
+  FileService fileService = new FileService();
+
   /// listen events
-  service.listen((event) {
+  service.listen((event) async {
     if (TargetPlatform.android == service.platform) {
       if ('requestPermission' == event[0]) {
         if (null != event[2])
@@ -38,21 +42,22 @@ Future<Null> initial() async {
       } else if ('softUninstall' == event[0]) {
         print('soft uninstall');
 
-        /// clear data
-        String path = service.getString('path');
-        if ('/storage/emulated/0/Yotaku' == path) {
-          try {
-            new Directory(path)..deleteSync(recursive: true);
+        /// clear files
+        String path = service.getString(root_name);
+        if (null != path) {
+          if (await fileService.deleteDirectory(path)) {
             print('delete path: $path successful');
-          } catch(e) {
-            print('delete path: $path failed, e: $e');
+          } else {
+            print('delete path: $path failed');
           }
         }
+
+        /// clear [SharedPreferences]
         service.setInt('launchTimes', null);
-        service.setString('path', null);
+        service.setString(root_name, null);
 
         /// check install
-        _checkInstall(service);
+        _checkInstall(service, fileService);
       }
     } else if (TargetPlatform.iOS == service.platform) {
       //TODO: listen events on iOS
@@ -62,13 +67,14 @@ Future<Null> initial() async {
   });
 
   /// check install
-  _checkInstall(service);
+  _checkInstall(service, fileService);
 }
 
 /// check install
 /// if launch times is bigger then 1, return directly;
-/// if is null or smaller then 1, try to create directory - Yotaku
-Future<Null> _checkInstall(SystemService service) async {
+/// if is null or smaller then 1, try to create directory - [root_name]
+Future<Null> _checkInstall(
+    SystemService service, FileService fileService) async {
   int launchTimes = service.getInt('launchTimes');
   if (null != launchTimes && launchTimes > 0) {
     /// update launch times
@@ -76,60 +82,18 @@ Future<Null> _checkInstall(SystemService service) async {
     launchTimes += 1;
     service.setInt('launchTimes', launchTimes);
     return;
-  }
-
-  if (TargetPlatform.android == service.platform) {
-    /// this is on android
-    print('on android');
-
+  } else {
     /// set launch times to 1
-    service.setInt('launchTimes', 1);
-
     print('this is the first time to run the app');
-
-    /// check write permission
-    bool havePermission =
-    await SimplePermissions.checkPermission(Permission.WriteExternalStorage);
-    if (true == havePermission) {
-      // have write permission
-      print('have write permission');
-    } else {
-      /// have not wirte permission, request it
-      print('have not write permission, request it');
-      bool result = await SimplePermissions
-          .requestPermission(Permission.WriteExternalStorage);
-      if (true != result) {
-        print('request wirte permission failed.');
-        return;
-      }
-      print('request wirte permission successful.');
-    }
-
-    /// create Yotaku directory
-    try {
-      Directory rootDirectory = await getExternalStorageDirectory();
-      print('rootDirectory is $rootDirectory');
-      String path = join(rootDirectory.path, 'Yotaku');
-      print('target path is $path');
-
-      service.setString('path', path);
-
-      Directory yotaku = new Directory(path);
-
-      /// path exists, return
-      if (yotaku.existsSync()) {
-        print('${yotaku.path} exists, return');
-        return;
-      }
-
-      /// path not exists, create it
-      yotaku.createSync();
-    } catch (e) {
-      print('get rootDirectory failed, e: $e');
-      return;
-    }
-  } else if (TargetPlatform.iOS == service.platform) {
-    /// TODO:iOS
-    print('something need to be done on iOS');
+    service.setInt('launchTimes', 1);
   }
+
+  /// create root directory
+  if (!await fileService.creatRootDirectory()) {
+    /// create root directory failed
+    return;
+  }
+
+  /// store the root path.
+  service.setString(root_name, fileService.rootPath);
 }
