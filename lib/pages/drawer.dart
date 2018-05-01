@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widgets/link_text_span.dart';
+import '../services/system.dart';
 
 class MyDrawerHeader extends StatefulWidget {
   _MyDrawerHeaderState createState() => new _MyDrawerHeaderState();
@@ -19,10 +20,16 @@ class MyDrawer extends StatefulWidget {
 }
 
 class _MyDrawerState extends State<MyDrawer> {
+  SystemService service = new SystemService();
 
   /// open import local screen
   void openImportLocalScreen() {
     Navigator.pushNamed(context, 'importLocal');
+  }
+
+  /// soft uninstall
+  void handleSoftUninstall() {
+    service.send(['softUninstall']);
   }
 
   @override
@@ -39,6 +46,15 @@ class _MyDrawerState extends State<MyDrawer> {
           child: new Icon(Icons.system_update_alt)),
       title: const Text('本地导入'),
       onTap: openImportLocalScreen,
+    );
+
+    /// soft uninstall
+    final Widget softUninstall = new ListTile(
+      leading: new Container(
+          margin: const EdgeInsets.only(left: 8.0),
+          child: new Icon(Icons.delete)),
+      title: const Text('软卸载'),
+      onTap: handleSoftUninstall,
     );
 
     /// about light
@@ -74,6 +90,7 @@ class _MyDrawerState extends State<MyDrawer> {
     final List<Widget> allDrawerItems = <Widget>[];
 
     allDrawerItems.add(importBooksItem);
+    allDrawerItems.add(softUninstall);
     allDrawerItems.add(aboutItem);
 
     return new Drawer(
