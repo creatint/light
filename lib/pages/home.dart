@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'drawer.dart';
-import 'shelf/shelf.dart';
+import 'shelf.dart';
 
 class Home extends StatefulWidget {
   @override
