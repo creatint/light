@@ -120,7 +120,7 @@ class FileService {
       if (true == havePermission) {
         // have write permission
         print('have write permission');
-        _havePermission = havePermission;
+        _havePermission = true;
       } else {
         /// have not wirte permission, request it
         print('have not write permission, request it');
@@ -128,7 +128,7 @@ class FileService {
             .requestPermission(Permission.WriteExternalStorage);
         if (true == requestPermission) {
           print('request external directroy permission successful.');
-          _havePermission = havePermission;
+          _havePermission = true;
         } else {
           print('request external directroy permission failed.');
         }
@@ -146,7 +146,9 @@ class FileService {
   /// get FileSystemEntities from directory
   Future<List<FileSystemEntity>> getEntities(dynamic directory,
       {bool recursive: false}) async {
+    print('getEntities');
     if (!await checkPermission()) {
+      print('get entities failed');
       return null;
     }
     if (null == directory) {
@@ -155,6 +157,7 @@ class FileService {
     if (directory is String) {
       directory = new Directory(directory);
     }
+    print('directory: $directory');
     if (!directory.existsSync()) {
       return null;
     }
