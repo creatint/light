@@ -16,7 +16,9 @@ class _ShelfState extends State<Shelf> {
   }
 
   /// open search page
-  void handleSearch() {}
+  void handleSearch() {
+    Navigator.pushNamed(context, 'search');
+  }
 
   @override
   Widget build(BuildContext context) {

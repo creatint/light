@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home.dart';
 import 'import_local.dart';
+import 'search.dart';
 
 class App extends StatefulWidget {
   @override
@@ -14,7 +15,8 @@ class _AppState extends State<App> {
     return new MaterialApp(
       home: new Home(),
       routes: <String, WidgetBuilder> {
-        'importLocal': (BuildContext context) => new ImportLocal()
+        'importLocal': (BuildContext context) => new ImportLocal(),
+        'search': (BuildContext context) => new Search(),
       },
     );
   }
