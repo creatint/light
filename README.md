@@ -6,7 +6,7 @@
 
 Light novel reader.
 
-Version: 0.0.1
+Version: 0.0.2
 
 ## Screeshot
 pagination | import local books 
