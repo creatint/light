@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'drawer.dart';
+import 'shelf/shelf.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -6,12 +8,15 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final GlobalKey<ScaffoldState> scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: new Container(
-        child: new Text('hello world'),
-      ),
-    );
+        key: scaffoldKey,
+        drawer: new MyDrawer(),
+        body: new Shelf(
+          scaffoldKey: scaffoldKey,
+        ));
   }
 }
