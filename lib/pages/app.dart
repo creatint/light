@@ -10,6 +10,13 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
 
+  /// initial app
+  @override
+  void initState() {
+    super.initState();
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
