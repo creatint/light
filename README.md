@@ -8,6 +8,11 @@ Light novel reader.
 
 Version: 0.0.1
 
+## Screeshot
+pagination | import local books 
+:-------------------------:|:-------------------------:
+![分页显示](https://user-images.githubusercontent.com/17924777/39093416-24e27484-4652-11e8-9eaa-96b610508d80.gif) | ![本地导入](https://user-images.githubusercontent.com/17924777/39093132-18904792-464d-11e8-9bda-4f30abec0504.gif)
+
 ## Features
 
 - [ ] EPub
@@ -28,12 +33,6 @@ Version: 0.0.1
 - [ ] Text to speech
 - [ ] User auth
 - [ ] Cloud
-
-
-## Screeshot
-pagination | import local books 
-:-------------------------:|:-------------------------:
-![分页显示](https://user-images.githubusercontent.com/17924777/39093416-24e27484-4652-11e8-9eaa-96b610508d80.gif) | ![本地导入](https://user-images.githubusercontent.com/17924777/39093132-18904792-464d-11e8-9bda-4f30abec0504.gif)
 
 ## Usage
 ```
