@@ -17,27 +17,13 @@ Future<Null> initial() async {
   /// get service instance
   SystemService service = new SystemService(prefs: prefs);
 
-  FileService fileService = new FileService();
+  /// get the fileService instance
+  FileService fileService = new FileService(systemService: service);
 
   /// listen events
   service.listen((event) async {
     if (TargetPlatform.android == service.platform) {
-      if ('requestPermission' == event[0]) {
-        if (null != event[2])
-          event[2](SimplePermissions.requestPermission(event[1]));
-        else
-          SimplePermissions.requestPermission(event[1]);
-      } else if ('checkPermission' == event[0]) {
-        if (null != event[2])
-          event[2](SimplePermissions.checkPermission(event[1]));
-        else
-          SimplePermissions.checkPermission(event[1]);
-      } else if ('getPermissionStatus' == event[0]) {
-        if (null != event[2])
-          event[2](SimplePermissions.getPermissionStatus(event[1]));
-        else
-          SimplePermissions.getPermissionStatus(event[1]);
-      } else if ('openSettings' == event[0]) {
+      if ('openSettings' == event[0]) {
         SimplePermissions.openSettings();
       } else if ('softUninstall' == event[0]) {
         print('soft uninstall');
@@ -81,7 +67,6 @@ Future<Null> _checkInstall(
     print('lancun times is $launchTimes');
     launchTimes += 1;
     service.setInt('launchTimes', launchTimes);
-    return;
   } else {
     /// set launch times to 1
     print('this is the first time to run the app');
