@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/foundation.dart' show TargetPlatform;
+import 'package:flutter/foundation.dart' show TargetPlatform, required;
 import 'package:simple_permissions/simple_permissions.dart';
 import 'system.dart';
 import '../utils/constants.dart';
@@ -10,14 +10,14 @@ import '../utils/constants.dart';
 class FileService {
   static FileService _cache;
 
-  factory FileService() {
+  factory FileService({SystemService systemService}) {
     if (null == _cache) {
-      _cache = new FileService._internal();
+      _cache = new FileService._internal(systemService: systemService);
     }
     return _cache;
   }
 
-  FileService._internal();
+  FileService._internal({@required SystemService systemService});
 
   final SystemService service = new SystemService();
 
@@ -52,9 +52,6 @@ class FileService {
 
   Future<bool> creatRootDirectory() async {
     print('create root directory');
-    if (!await checkPermission()) {
-      return false;
-    }
     try {
       String path = join((await getExternalStorageDirectory()).path, root_name);
       print('the root path is $path');
@@ -68,6 +65,13 @@ class FileService {
       print('create root directory failed');
       return false;
     }
+  }
+
+  Future<Directory> getRootDirectory() async {
+    if (null != rootPath) {
+      return new Directory(rootPath);
+    }
+    return null;
   }
 
   /// delete directory
@@ -145,12 +149,17 @@ class FileService {
     if (!await checkPermission()) {
       return null;
     }
+    if (null == directory) {
+      directory = await getExternalStorageDirectory();
+    }
     if (directory is String) {
       directory = new Directory(directory);
     }
     if (!directory.existsSync()) {
       return null;
     }
+    print('get Entities $directory');
+
     return directory.listSync(recursive: recursive);
   }
 }
