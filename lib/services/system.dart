@@ -2,12 +2,14 @@ import 'dart:async';
 import 'package:flutter/foundation.dart'
     show required, TargetPlatform, defaultTargetPlatform;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_permissions/simple_permissions.dart';
 
 class SystemService {
   static SystemService _cache;
 
-  SystemService._internal({@required this.prefs})
-      : streamController = new StreamController<dynamic>.broadcast(),
+  SystemService._internal({@required SharedPreferences prefs})
+      : _prefs = prefs,
+        _streamController = new StreamController<dynamic>.broadcast(),
         platform = defaultTargetPlatform;
 
   factory SystemService({SharedPreferences prefs}) {
@@ -18,48 +20,75 @@ class SystemService {
   }
 
   /// SharedPreferences instance
-  final SharedPreferences prefs;
+  final SharedPreferences _prefs;
 
-  dynamic get(String key) => prefs.get(key);
+  /// get [dynamic] from [SharedPreferences]
+  dynamic get(String key) => _prefs.get(key);
 
-  String getString(String key) => prefs.getString(key);
+  /// get [String] from [SharedPreferences]
+  String getString(String key) => _prefs.getString(key);
 
-  List<String> getStringList(String key) => prefs.getStringList(key);
+  /// get [List<String>] from [SharedPreferences]
+  List<String> getStringList(String key) => _prefs.getStringList(key);
 
-  double getDouble(String key) => prefs.getDouble(key);
+  /// get [double] from [SharedPreferences]
+  double getDouble(String key) => _prefs.getDouble(key);
 
-  int getInt(String key) => prefs.getInt(key);
+  /// get [int] from [SharedPreferences]
+  int getInt(String key) => _prefs.getInt(key);
 
-  bool getBool(String key) => prefs.getBool(key);
+  /// get [bool] from [SharedPreferences]
+  bool getBool(String key) => _prefs.getBool(key);
 
-  Set<String> getKeys() => prefs.getKeys();
+  /// get [Set<String] from [SharedPreferences]
+  Set<String> getKeys() => _prefs.getKeys();
 
-  void setString(String key, String value) => prefs.setString(key, value);
+  /// set [String] value to [SharedPreferences]
+  void setString(String key, String value) => _prefs.setString(key, value);
 
-  void setDouble(String key, double value) => prefs.setDouble(key, value);
+  /// set [double] value to [SharedPreferences]
+  void setDouble(String key, double value) => _prefs.setDouble(key, value);
 
-  void setInt(String key, int value) => prefs.setInt(key, value);
+  /// set [int] value to [SharedPreferences]
+  void setInt(String key, int value) => _prefs.setInt(key, value);
 
-  void setBool(String key, bool value) => prefs.setBool(key, value);
+  /// set [bool] value to [SharedPreferences]
+  void setBool(String key, bool value) => _prefs.setBool(key, value);
 
+  /// set [List<String>] value to [SharedPreferences]
   void setStringList(String key, List<String> value) =>
-      prefs.setStringList(key, value);
+      _prefs.setStringList(key, value);
 
   /// controller of stream
-  final StreamController<dynamic> streamController;
+  final StreamController<dynamic> _streamController;
 
-  /// get stream
-  Stream get stream => streamController.stream;
+  /// get a [Stream]
+  Stream get _stream => _streamController.stream;
 
   /// fire a event
   /// value = [String eventName, dynamic data]
-  void send(value) => streamController.add(value);
+  void send(value) => _streamController.add(value);
 
-  /// add listener and return subscription
+  /// add listener and return [StreamSubscription]
   StreamSubscription<T> listen<T>(void onData(T event)) {
-    return stream.listen(onData);
+    return _stream.listen(onData);
   }
 
   /// device's platform
   final TargetPlatform platform;
+
+  /// Check a [permission] and return a [Future] with the result
+  Future<bool> checkPermission(permission) =>
+      SimplePermissions.checkPermission(permission);
+
+  /// Request a [permission] and return a [Future] with the result
+  Future<bool> requestPermission(permission) =>
+      SimplePermissions.requestPermission(permission);
+
+  /// Open app settings on Android and iOs
+  Future<bool> openSettings() => SimplePermissions.openSettings();
+
+  /// Get iOs permission status
+  Future<PermissionStatus> getPermissionStatus(Permission permission) =>
+      SimplePermissions.getPermissionStatus(permission);
 }
