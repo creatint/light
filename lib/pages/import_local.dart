@@ -2,8 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
-import '../services/file.dart';
-import '../services/book.dart';
+import '../services/system.dart';
 import '../widgets/file_item.dart';
 import '../utils/utils.dart';
 
@@ -13,8 +12,7 @@ class ImportLocal extends StatefulWidget {
 }
 
 class _ImportLocalState extends State<ImportLocal> {
-  FileService fileService = new FileService();
-  BookService bookService = new BookService();
+  SystemService service = new SystemService();
 
   // is in select mode
   bool selectMode = false;
@@ -42,7 +40,7 @@ class _ImportLocalState extends State<ImportLocal> {
     print('current directory is $currentDirectory');
 
     setState(() {
-      listFuture = fileService.getEntities(directory,
+      listFuture = service.fileService.getEntities(directory,
           directories: directories, recursive: recursive);
     });
   }
@@ -157,23 +155,26 @@ class _ImportLocalState extends State<ImportLocal> {
   /// handle scan files
   void handleScan() {
     if (!scanned) {
-      print('scanning');
-      scanned = true;
-      if (selectMode && FileType.DIRECTORY == selectedType) {
-        /// 多选文件夹模式
-        print('多选文件夹模式');
+      if (FileType.DIRECTORY == selectedType) {
+        /// directory mode
         if (selectedList.length > 0) {
-          print('flag');
           resolvePath(null, directories: selectedList, recursive: true);
         } else {
-          print('flag1');
           resolvePath(currentDirectory, recursive: true);
         }
       } else {
+        /// file mode
         resolvePath(currentDirectory, recursive: true);
       }
+      setState(() {
+        scanned = true;
+        selectedType = null;
+        selectMode = true;
+      });
     } else {
-      scanned = false;
+      setState(() {
+        scanned = false;
+      });
       resolvePath(currentDirectory);
     }
   }
@@ -182,15 +183,15 @@ class _ImportLocalState extends State<ImportLocal> {
     if (selectMode &&
         FileType.DIRECTORY != selectedType &&
         selectedList.length > 0) {
-      print('import $selectedList');
-      final ThemeData theme = Theme.of(context);
-      final TextStyle dialogTextStyle = theme.textTheme.subhead;
-      int count = await bookService.importBooks(selectedList);
+      print('import ${selectedList.length} books.');
+      int count = await service.bookService.importLocalBooks(selectedList);
+      print('refresh shelf');
+      service.send(['refreshShelf']);
       showDialog<bool>(
           context: context,
           builder: (BuildContext context) => new AlertDialog(
               title: new Text(count > 0 ? '成功导入$count个资源' : '导入失败'),
-              content: new Text('返回书架？', style: dialogTextStyle),
+              content: new Text('返回书架？', style: Theme.of(context).textTheme.subhead),
               actions: <Widget>[
                 new FlatButton(
                     child: const Text('否'),
@@ -203,7 +204,6 @@ class _ImportLocalState extends State<ImportLocal> {
                       Navigator.pop(context, true);
                     })
               ])).then<bool>((value) {
-        print(value);
         if (value) {
           Navigator.pop(context);
         } else {
@@ -231,7 +231,7 @@ class _ImportLocalState extends State<ImportLocal> {
                 ),
               )),
               new Offstage(
-                offstage: !fileService.canUp(currentDirectory),
+                offstage: !service.fileService.canUp(currentDirectory),
                 child: new SizedBox(
                   height: 44.0,
                   child: new FlatButton(
@@ -260,10 +260,7 @@ class _ImportLocalState extends State<ImportLocal> {
             );
           } else if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasData && null != snapshot.data) {
-              print('有值');
-              print(snapshot.data);
               list = snapshot.data;
-              print('scanned=$scanned');
               list.removeWhere((FileSystemEntity file) =>
                   (scanned &&
                       (FileSystemEntity.isDirectorySync(file.path) ||
@@ -336,7 +333,6 @@ class _ImportLocalState extends State<ImportLocal> {
   @override
   void initState() {
     super.initState();
-//    listFuture = fileService.getEntities(null);
     getExternalStorageDirectory().then((Directory directory) {
       resolvePath(directory);
     });
