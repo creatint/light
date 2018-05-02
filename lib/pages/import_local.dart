@@ -17,8 +17,14 @@ class _ImportLocalState extends State<ImportLocal> {
   // is in select mode
   bool selectMode = false;
 
+  bool scanned = false;
+
+  FileType selectedType;
+
   /// current list of FileSystemEntityes
   Future<List<FileSystemEntity>> listFuture;
+
+  List<FileSystemEntity> list = <FileSystemEntity>[];
 
   /// list of selected FileSystemEntities
   List<FileSystemEntity> selectedList = <FileSystemEntity>[];
@@ -26,18 +32,69 @@ class _ImportLocalState extends State<ImportLocal> {
   Directory currentDirectory;
 
   /// get entities in this path
-  void resolvePath(Directory directory) {
-    currentDirectory = directory;
+  void resolvePath(FileSystemEntity directory,
+      {List<FileSystemEntity> directories, bool recursive: false}) {
+    if (null != directory) {
+      currentDirectory = directory;
+    }
     print('current directory is $currentDirectory');
+
     setState(() {
-      listFuture = fileService.getEntities(directory);
+      listFuture = fileService.getEntities(directory,
+          directories: directories, recursive: recursive);
+    });
+  }
+
+  void update(FileSystemEntity file) {
+    setState(() {
+      if (indexOf(file) >= 0) {
+        print('exists , remove');
+        remove(file);
+      } else {
+        print('dose not exist , add');
+        add(file);
+      }
+    });
+  }
+
+  void add(FileSystemEntity file) {
+    remove(file);
+    selectedList.add(file);
+  }
+
+  void remove(FileSystemEntity file) {
+    if (selectedList.length == 0) return;
+    selectedList.removeWhere((FileSystemEntity tmp) => tmp.path == file.path);
+  }
+
+  int indexOf(FileSystemEntity file) {
+    if (selectedList.length == 0) return -1;
+    return selectedList.indexWhere((FileSystemEntity tmp) {
+      return tmp.path == file.path;
     });
   }
 
   /// handle tap
   void handleTap(FileSystemEntity file) {
     print('handle tap: $file');
-    if (selectMode) {} else {
+    if (selectMode) {
+      if (FileType.DIRECTORY == selectedType) {
+        print('directory mode');
+        if (FileSystemEntity.isDirectorySync(file.path)) {
+          print('is directory');
+          update(file);
+        }
+      } else {
+        /// book mode
+        print('book mode');
+        if (FileSystemEntity.isDirectorySync(file.path)) {
+          resolvePath(file);
+        } else {
+          print('is book');
+          update(file);
+        }
+      }
+    } else {
       if (FileSystemEntity.isDirectorySync(file.path)) {
         resolvePath(file);
       } else {
@@ -49,15 +106,75 @@ class _ImportLocalState extends State<ImportLocal> {
   /// handle long press
   void handleLongPress(FileSystemEntity file) {
     print('handle long press: $file');
+    if (!selectMode) {
+      if (FileType.DIRECTORY == getFileType(file)) {
+        selectedType = FileType.DIRECTORY;
+      }
+      selectMode = true;
+      update(file);
+    }
   }
 
   /// pop the current path
   void handlePop() {
+    scanned = false;
     resolvePath(currentDirectory.parent);
   }
 
+  void handleCancel() {
+    setState(() {
+      selectedList.clear();
+      selectedType = null;
+      selectMode = false;
+    });
+  }
+
+  void handleSelectAll() {
+    if (selectedList.length != list.length) {
+      setState(() {
+        selectedList.clear();
+        list.forEach((FileSystemEntity file) {
+          if (FileType.DIRECTORY == selectedType) {
+            if (FileSystemEntity.isDirectorySync(file.path)) {
+              selectedList.add(file);
+            }
+          } else {
+            if (fileIsBook(file)) {
+              selectedList.add(file);
+            }
+          }
+        });
+      });
+    } else {
+      setState(() {
+        selectedList.clear();
+      });
+    }
+  }
+
   /// handle scan files
-  void handleScan() {}
+  void handleScan() {
+    if (!scanned) {
+      print('scanning');
+      scanned = true;
+      if (selectMode && FileType.DIRECTORY == selectedType) {
+        /// 多选文件夹模式
+        print('多选文件夹模式');
+        if (selectedList.length > 0) {
+          print('flag');
+          resolvePath(null, directories: selectedList, recursive: true);
+        } else {
+          print('flag1');
+          resolvePath(currentDirectory, recursive: true);
+        }
+      } else {
+        resolvePath(currentDirectory, recursive: true);
+      }
+    } else {
+      scanned = false;
+      resolvePath(currentDirectory);
+    }
+  }
 
   Widget buildPathBar() {
     return new Column(
@@ -108,17 +225,30 @@ class _ImportLocalState extends State<ImportLocal> {
             if (snapshot.hasData && null != snapshot.data) {
               print('有值');
               print(snapshot.data);
+              list = snapshot.data;
+              print('scanned=$scanned');
+              list.removeWhere((FileSystemEntity file) =>
+                  (scanned &&
+                      (FileSystemEntity.isDirectorySync(file.path) ||
+                          !fileIsBook(file))) ||
+                  !scanned &&
+                      ((!FileSystemEntity.isDirectorySync(file.path) &&
+                          !fileIsBook(file))));
               return new ListView(
-                  children: snapshot.data.map((FileSystemEntity file) {
+                  children: list.map((FileSystemEntity file) {
                 return new FileItem(
                   file: file,
                   onTap: handleTap,
+                  selectMode: selectMode,
                   onLongPress: handleLongPress,
+                  selectedList: selectedList,
+                  indexOf: indexOf,
+                  selectedType: selectedType,
                 );
               }).toList());
             } else {
               return new Container(
-                child: new Text('无值，无权限'),
+                child: new Center(child: new Text('无结果')),
               );
             }
           } else {
@@ -138,10 +268,10 @@ class _ImportLocalState extends State<ImportLocal> {
             children: <Widget>[
               new Padding(
                 padding: const EdgeInsets.only(left: 16.0),
-                child: new Text('已选0项'),
+                child: new Text('已选${selectedList.length}项'),
               ),
-              new FlatButton(onPressed: () {}, child: new Text('全选')),
-              new FlatButton(onPressed: () {}, child: new Text('取消'))
+              new FlatButton(onPressed: handleSelectAll, child: new Text('全选')),
+              new FlatButton(onPressed: handleCancel, child: new Text('取消'))
             ],
           ),
           new FlatButton(onPressed: () {}, child: new Text('导入'))
@@ -165,7 +295,10 @@ class _ImportLocalState extends State<ImportLocal> {
         appBar: new AppBar(
           title: new Text('导入本地书籍'),
           actions: <Widget>[
-            new FlatButton(onPressed: handleScan, child: new Text('扫描'))
+            new FlatButton(
+                onPressed: handleScan,
+                textColor: Theme.of(context).buttonColor,
+                child: new Text(!scanned ? '扫描' : '返回'))
           ],
         ),
         body: new Column(
