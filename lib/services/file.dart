@@ -160,11 +160,11 @@ class FileService {
     if (null != directory &&
         directory.existsSync() &&
         FileSystemEntity.isDirectorySync(directory.path)) {
-      print('单一文件夹 $directory');
+      /// signle directory
       return directory.listSync(recursive: recursive);
     }
     if (null != directories) {
-      print('多文件夹 $directories');
+      /// multi directories
       List<FileSystemEntity> list = <FileSystemEntity>[];
       directories.forEach((FileSystemEntity directory) async {
         List<FileSystemEntity> tmp = await getEntities(directory, recursive: recursive);
