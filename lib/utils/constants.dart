@@ -1,1 +1,1 @@
-const root_name = 'Yotaku';
+const app_path = 'Yotaku';
