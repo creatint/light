@@ -29,7 +29,7 @@ Future<Null> initial() async {
         print('soft uninstall');
 
         /// clear files
-        String path = service.getString(root_name);
+        String path = service.getString(app_path);
         if (null != path) {
           if (await fileService.deleteDirectory(path)) {
             print('delete path: $path successful');
@@ -40,7 +40,7 @@ Future<Null> initial() async {
 
         /// clear [SharedPreferences]
         service.setInt('launchTimes', null);
-        service.setString(root_name, null);
+        service.setString(app_path, null);
 
         /// check install
         _checkInstall(service, fileService);
@@ -73,12 +73,15 @@ Future<Null> _checkInstall(
     service.setInt('launchTimes', 1);
   }
 
-  /// create root directory
-  if (!await fileService.creatRootDirectory()) {
+  /// check and create root directory
+  /// every time the app runs, do this
+  if (!await fileService.checkAppDirectory()) {
     /// create root directory failed
+    print('create root directory failed');
     return;
   }
+  print('check root directory successful');
 
   /// store the root path.
-  service.setString(root_name, fileService.rootPath);
+  service.setString(app_path, fileService.appPath);
 }
