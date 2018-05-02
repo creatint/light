@@ -142,30 +142,38 @@ class FileService {
 
   /// valid only after checkAppDirectory has been called.
   bool canUp(FileSystemEntity currentEntity) {
-    print('current: $currentEntity root: $rootDirectory ${currentEntity?.path != rootDirectory.path}');
-    return null != currentEntity && currentEntity.path != rootDirectory.path;
+    print('current: $currentEntity root: $rootDirectory ${currentEntity?.path !=
+        rootDirectory.path}');
+    return null != currentEntity &&
+        currentEntity.path != rootDirectory.path &&
+        currentEntity.path.length >= rootDirectory.path.length;
   }
 
   /// get FileSystemEntities from directory
-  Future<List<FileSystemEntity>> getEntities(dynamic directory,
-      {bool recursive: false}) async {
+  Future<List<FileSystemEntity>> getEntities(Directory directory,
+      {List<FileSystemEntity> directories, bool recursive: false}) async {
     print('getEntities');
     if (!await checkPermission()) {
       print('get entities failed');
       return null;
     }
-    if (null == directory) {
-      return null;
+    if (null != directory &&
+        directory.existsSync() &&
+        FileSystemEntity.isDirectorySync(directory.path)) {
+      print('单一文件夹 $directory');
+      return directory.listSync(recursive: recursive);
     }
-    if (directory is String) {
-      directory = new Directory(directory);
+    if (null != directories) {
+      print('多文件夹 $directories');
+      List<FileSystemEntity> list = <FileSystemEntity>[];
+      directories.forEach((FileSystemEntity directory) async {
+        List<FileSystemEntity> tmp = await getEntities(directory, recursive: recursive);
+        if (null != tmp) {
+          list.addAll(tmp);
+        }
+      });
+      return list;
     }
-    print('directory: $directory');
-    if (!directory.existsSync()) {
-      return null;
-    }
-    print('get Entities $directory');
-
-    return directory.listSync(recursive: recursive);
+    return null;
   }
 }
