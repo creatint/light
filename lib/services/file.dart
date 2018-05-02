@@ -47,31 +47,26 @@ class FileService {
     }
   }
 
-  /// root directory's path
-  String rootPath;
+  /// app directory's path
+  String appPath;
 
-  Future<bool> creatRootDirectory() async {
-    print('create root directory');
+  /// when the app runs, check app directory if exists and create it.
+  Future<bool> checkAppDirectory() async {
+    print('check app directory');
+    rootDirectory = await getExternalStorageDirectory();
     try {
-      String path = join((await getExternalStorageDirectory()).path, root_name);
-      print('the root path is $path');
+      String path = join(rootDirectory.path, app_path);
+      print('the app path is $path');
       if (await createDirectory(path)) {
-        rootPath = path;
+        appPath = path;
         return true;
       }
       return false;
     } catch (e) {
       /// create root directory failed
-      print('create root directory failed');
+      print('check app directory failed');
       return false;
     }
-  }
-
-  Future<Directory> getRootDirectory() async {
-    if (null != rootPath) {
-      return new Directory(rootPath);
-    }
-    return null;
   }
 
   /// delete directory
@@ -143,6 +138,14 @@ class FileService {
     return _havePermission;
   }
 
+  Directory rootDirectory;
+
+  /// valid only after checkAppDirectory has been called.
+  bool canUp(FileSystemEntity currentEntity) {
+    print('current: $currentEntity root: $rootDirectory ${currentEntity?.path != rootDirectory.path}');
+    return null != currentEntity && currentEntity.path != rootDirectory.path;
+  }
+
   /// get FileSystemEntities from directory
   Future<List<FileSystemEntity>> getEntities(dynamic directory,
       {bool recursive: false}) async {
@@ -152,7 +155,7 @@ class FileService {
       return null;
     }
     if (null == directory) {
-      directory = await getExternalStorageDirectory();
+      return null;
     }
     if (directory is String) {
       directory = new Directory(directory);
