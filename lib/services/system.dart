@@ -4,6 +4,9 @@ import 'package:flutter/foundation.dart'
     show required, TargetPlatform, defaultTargetPlatform;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_permissions/simple_permissions.dart';
+import 'book.dart';
+import 'file.dart';
+import '../models/book.dart';
 
 class SystemService {
   static SystemService _cache;
@@ -94,5 +97,21 @@ class SystemService {
   Future<PermissionStatus> getPermissionStatus(Permission permission) =>
       SimplePermissions.getPermissionStatus(permission);
 
+  FileService _fileService;
 
+  FileService get fileService {
+    if (null == _fileService) {
+      _fileService = new FileService();
+    }
+    return _fileService;
+  }
+
+  BookService _bookService;
+
+  BookService get bookService {
+    if (null == _bookService) {
+      _bookService = new BookService();
+    }
+    return _bookService;
+  }
 }
