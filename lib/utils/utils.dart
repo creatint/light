@@ -12,7 +12,8 @@ enum FileType {
   DIRECTORY
 }
 
-RegExp _regBasename = new RegExp(r'[^/\\]+$');
+RegExp _regName = new RegExp(r'[^/\\]+$');
+RegExp _regBaseName = new RegExp(r'(.+)\.');
 RegExp _regFileType = new RegExp(r'([^.\\/]+)$');
 RegExp _regTXT = new RegExp(r'txt');
 RegExp _regPDF = new RegExp(r'pdf');
@@ -26,12 +27,18 @@ RegExp _regAUDIO = new RegExp(r'mp3|ogg|cd|mp3pro|real|wma'
 
 String getFileName(dynamic file) {
   if (file is String) {
-    return _regBasename.firstMatch(file)?.group(0);
+    return _regName.firstMatch(file)?.group(0);
   } else if (file is Directory || file is FileSystemEntity) {
     return file.path.substring(file.parent.path.length + 1, file.path.length);
   } else {
     return '';
   }
+}
+
+String getFileBaseName(dynamic file) {
+  String name = getFileName(file);
+  if (null == name) return null;
+  return _regBaseName.firstMatch(name)?.group(1);
 }
 
 String getFileSuffix(dynamic file) {
