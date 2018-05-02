@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import '../services/file.dart';
+import '../services/book.dart';
 import '../widgets/file_item.dart';
 import '../utils/utils.dart';
 
@@ -13,6 +14,7 @@ class ImportLocal extends StatefulWidget {
 
 class _ImportLocalState extends State<ImportLocal> {
   FileService fileService = new FileService();
+  BookService bookService = new BookService();
 
   // is in select mode
   bool selectMode = false;
@@ -176,6 +178,41 @@ class _ImportLocalState extends State<ImportLocal> {
     }
   }
 
+  void handleImport() async {
+    if (selectMode &&
+        FileType.DIRECTORY != selectedType &&
+        selectedList.length > 0) {
+      print('import $selectedList');
+      final ThemeData theme = Theme.of(context);
+      final TextStyle dialogTextStyle = theme.textTheme.subhead;
+      int count = await bookService.importBooks(selectedList);
+      showDialog<bool>(
+          context: context,
+          builder: (BuildContext context) => new AlertDialog(
+              title: new Text(count > 0 ? '成功导入$count个资源' : '导入失败'),
+              content: new Text('返回书架？', style: dialogTextStyle),
+              actions: <Widget>[
+                new FlatButton(
+                    child: const Text('否'),
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    }),
+                new FlatButton(
+                    child: const Text('是'),
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    })
+              ])).then<bool>((value) {
+        print(value);
+        if (value) {
+          Navigator.pop(context);
+        } else {
+//          handleCancleSelect();
+        }
+      });
+    }
+  }
+
   Widget buildPathBar() {
     return new Column(
       children: <Widget>[
@@ -235,17 +272,18 @@ class _ImportLocalState extends State<ImportLocal> {
                       ((!FileSystemEntity.isDirectorySync(file.path) &&
                           !fileIsBook(file))));
               return new ListView(
+                  physics: new BouncingScrollPhysics(),
                   children: list.map((FileSystemEntity file) {
-                return new FileItem(
-                  file: file,
-                  onTap: handleTap,
-                  selectMode: selectMode,
-                  onLongPress: handleLongPress,
-                  selectedList: selectedList,
-                  indexOf: indexOf,
-                  selectedType: selectedType,
-                );
-              }).toList());
+                    return new FileItem(
+                      file: file,
+                      onTap: handleTap,
+                      selectMode: selectMode,
+                      onLongPress: handleLongPress,
+                      selectedList: selectedList,
+                      indexOf: indexOf,
+                      selectedType: selectedType,
+                    );
+                  }).toList());
             } else {
               return new Container(
                 child: new Center(child: new Text('无结果')),
@@ -260,23 +298,38 @@ class _ImportLocalState extends State<ImportLocal> {
   }
 
   Widget buildBottomBar() {
-    return new Container(
-      height: 48.0,
-      child: new Row(
-        children: <Widget>[
-          new Row(
+    return new Column(
+      children: <Widget>[
+        new Divider(height: 1.0),
+        new Container(
+          height: 48.0,
+          child: new Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              new Padding(
-                padding: const EdgeInsets.only(left: 16.0),
-                child: new Text('已选${selectedList.length}项'),
+              new Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  new Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: new Center(
+                        child: new Text('已选${selectedList.length}项')),
+                  ),
+                  new FlatButton(
+                      onPressed: handleSelectAll, child: new Text('全选')),
+                  new FlatButton(onPressed: handleCancel, child: new Text('取消'))
+                ],
               ),
-              new FlatButton(onPressed: handleSelectAll, child: new Text('全选')),
-              new FlatButton(onPressed: handleCancel, child: new Text('取消'))
+              new FlatButton(
+                  onPressed: FileType.DIRECTORY != selectedType &&
+                          selectedList.length > 0
+                      ? handleImport
+                      : null,
+                  child: new Text('导入'))
             ],
           ),
-          new FlatButton(onPressed: () {}, child: new Text('导入'))
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -295,10 +348,14 @@ class _ImportLocalState extends State<ImportLocal> {
         appBar: new AppBar(
           title: new Text('导入本地书籍'),
           actions: <Widget>[
-            new FlatButton(
-                onPressed: handleScan,
-                textColor: Theme.of(context).buttonColor,
-                child: new Text(!scanned ? '扫描' : '返回'))
+            new SizedBox(
+              width: 70.0,
+              child: new FlatButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: handleScan,
+                  textColor: Theme.of(context).buttonColor,
+                  child: new Text(!scanned ? '扫描' : '返回')),
+            )
           ],
         ),
         body: new Column(
