@@ -1,13 +1,10 @@
-import 'dart:io';
 import 'dart:async';
-import 'package:path/path.dart';
-import 'package:flutter/foundation.dart' show TargetPlatform;
-import 'package:simple_permissions/simple_permissions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:simple_permissions/simple_permissions.dart';
 import '../services/system.dart';
 import '../services/file.dart';
 import '../utils/constants.dart';
+
 
 /// initialize the app
 Future<Null> initial() async {
@@ -22,7 +19,7 @@ Future<Null> initial() async {
 
   /// listen events
   service.listen((event) async {
-    if (TargetPlatform.android == service.platform) {
+    if (service.isAndroid) {
       if ('openSettings' == event[0]) {
         SimplePermissions.openSettings();
       } else if ('softUninstall' == event[0]) {
@@ -45,9 +42,9 @@ Future<Null> initial() async {
         /// check install
         _checkInstall(service, fileService);
       }
-    } else if (TargetPlatform.iOS == service.platform) {
+    } else if (service.isIOS) {
       //TODO: listen events on iOS
-    } else if (TargetPlatform.fuchsia == service.platform) {
+    } else if (service.isFuchsia) {
       //TODO: listen events on fuchsia
     }
   });

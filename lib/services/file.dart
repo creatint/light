@@ -98,7 +98,7 @@ class FileService {
 
   /// check directory permission
   Future<bool> checkPermission() async {
-    if (TargetPlatform.android == service.platform) {
+    if (service.isAndroid) {
       /// on android
       print('on android');
       print('check external directory permission');
@@ -128,10 +128,10 @@ class FileService {
           print('request external directroy permission failed.');
         }
       }
-    } else if (TargetPlatform.iOS == service.platform) {
+    } else if (service.isIOS) {
       /// TODO: check permission on iOS
       print('something need to be done on iOS');
-    } else if (TargetPlatform.fuchsia == service.platform) {
+    } else if (service.isFuchsia) {
       /// TODO: check permission on fuchsia
       print('something need to be done on Fuchsia');
     }

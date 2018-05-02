@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:async';
 import 'package:flutter/foundation.dart'
     show required, TargetPlatform, defaultTargetPlatform;
@@ -9,8 +10,7 @@ class SystemService {
 
   SystemService._internal({@required SharedPreferences prefs})
       : _prefs = prefs,
-        _streamController = new StreamController<dynamic>.broadcast(),
-        platform = defaultTargetPlatform;
+        _streamController = new StreamController<dynamic>.broadcast();
 
   factory SystemService({SharedPreferences prefs}) {
     if (null == _cache) {
@@ -75,7 +75,9 @@ class SystemService {
   }
 
   /// device's platform
-  final TargetPlatform platform;
+  bool get isAndroid => Platform.isAndroid;
+  bool get isIOS => Platform.isIOS;
+  bool get isFuchsia => Platform.isFuchsia;
 
   /// Check a [permission] and return a [Future] with the result
   Future<bool> checkPermission(permission) =>
@@ -91,4 +93,6 @@ class SystemService {
   /// Get iOs permission status
   Future<PermissionStatus> getPermissionStatus(Permission permission) =>
       SimplePermissions.getPermissionStatus(permission);
+
+
 }
