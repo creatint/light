@@ -190,20 +190,21 @@ class _ImportLocalState extends State<ImportLocal> {
       showDialog<bool>(
           context: context,
           builder: (BuildContext context) => new AlertDialog(
-              title: new Text(count > 0 ? '成功导入$count个资源' : '导入失败'),
-              content: new Text('返回书架？', style: Theme.of(context).textTheme.subhead),
-              actions: <Widget>[
-                new FlatButton(
-                    child: const Text('否'),
-                    onPressed: () {
-                      Navigator.pop(context, false);
-                    }),
-                new FlatButton(
-                    child: const Text('是'),
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    })
-              ])).then<bool>((value) {
+                  title: new Text(count > 0 ? '成功导入$count个资源' : '导入失败'),
+                  content: new Text('返回书架？',
+                      style: Theme.of(context).textTheme.subhead),
+                  actions: <Widget>[
+                    new FlatButton(
+                        child: const Text('否'),
+                        onPressed: () {
+                          Navigator.pop(context, false);
+                        }),
+                    new FlatButton(
+                        child: const Text('是'),
+                        onPressed: () {
+                          Navigator.pop(context, true);
+                        })
+                  ])).then<bool>((value) {
         if (value) {
           Navigator.pop(context);
         } else {
@@ -228,6 +229,7 @@ class _ImportLocalState extends State<ImportLocal> {
                   currentDirectory?.path ?? '',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
+                  softWrap: false,
                 ),
               )),
               new Offstage(
