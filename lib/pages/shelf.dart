@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'reader/reader.dart';
 import '../services/system.dart';
 import '../models/book.dart';
 import '../widgets/book_item.dart';
@@ -68,7 +69,9 @@ class _ShelfState extends State<Shelf> {
       update(book);
     } else {
       /// jump to reader
-
+      Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context){
+        return new Reader(book: book);
+      }));
     }
   }
 
@@ -106,7 +109,7 @@ class _ShelfState extends State<Shelf> {
                         })
                   ])).then<bool>((value) {
         if (true == value) {
-          int count = service.bookService.removeBooks(selectedBooks);
+          service.bookService.removeBooks(selectedBooks);
 
           selectedBooks.clear();
           inSelect = false;
