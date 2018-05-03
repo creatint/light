@@ -13,6 +13,8 @@ dependencies:
   simple_permissions: "^0.1.2"
   path_provider: "^0.4.0"
   path: "^1.5.1"
+  epub:
+    git: https://github.com/creatint/dart-epub-cn
 
 dev_dependencies:
   flutter_test:
