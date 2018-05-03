@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/foundation.dart' show TargetPlatform, required;
+import 'package:flutter/foundation.dart' show required;
 import 'package:simple_permissions/simple_permissions.dart';
 import 'system.dart';
 import '../utils/constants.dart';
