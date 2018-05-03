@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'dart:ui';
 import 'dart:async';
 import 'dart:convert';
 import '../services/system.dart';
 import '../utils/utils.dart';
 import '../utils/constants.dart';
 import '../models/book.dart';
+import '../models/record.dart';
 
 class BookService {
   static BookService _cache;
@@ -22,7 +24,6 @@ class BookService {
 
   static Map<String, Book> _books;
 
-
   /// get books from prefs
   Map<String, Book> getBooks() {
     String booksJson = service.getString(books_key);
@@ -31,7 +32,7 @@ class BookService {
     }
     _books = <String, Book>{};
     Map<String, dynamic> booksMap = json.decode(booksJson);
-    booksMap.forEach((String key, dynamic value){
+    booksMap.forEach((String key, dynamic value) {
       _books[key] = new Book.fromJson(value);
     });
     return _books;
@@ -51,7 +52,7 @@ class BookService {
     int count = 0;
     books.forEach((Book v) {
       print(v.toJson());
-      count ++;
+      count++;
       cacheBooks[v.uri] = v;
     });
     _books = cacheBooks;
@@ -67,8 +68,8 @@ class BookService {
     if (null == list || list.isEmpty) return 0;
     Map<String, Book> books = getBooks();
     int start = books.length;
-    list.forEach((Book v){
-      books.removeWhere((_, Book book)=> book.uri == v.uri);
+    list.forEach((Book v) {
+      books.removeWhere((_, Book book) => book.uri == v.uri);
     });
     _books = books;
     Map<String, dynamic> jsons = <String, dynamic>{};
@@ -102,5 +103,34 @@ class BookService {
       books.add(new Book.fromFile(file));
     });
     return addBooks(books);
+  }
+
+  Map<String, dynamic> _settings = {
+    'fontSize': 20.0,
+    'height': 1.2,
+    'textAlign': TextAlign.left,
+    'textDirection': TextDirection.ltr
+  };
+
+  Map<String, dynamic> getSettings() {
+    return _settings;
+  }
+
+  Map<String, Map<String, int>> _booksProgress;
+
+  /// get the progress of reading
+  Map<String, int> getBookProgress(Book book) {
+    assert(null != book);
+    String raw = service.getString(books_progress);
+    if (null == raw) {
+      _booksProgress = {
+        book.uri: {'offset': 0, 'index': 0}
+      };
+    } else if (_booksProgress.containsKey(book.uri)) {
+      _booksProgress[book.uri] = {'offset': 0, 'index': 0};
+    }
+    service.setString(books_progress, json.encode(_booksProgress));
+
+    return _booksProgress[book.uri];
   }
 }
