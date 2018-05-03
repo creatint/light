@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show required;
 import '../models/book.dart';
-import '../utils/utils.dart';
 
 class BookItem extends StatelessWidget {
   BookItem(
