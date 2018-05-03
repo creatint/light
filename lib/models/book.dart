@@ -59,6 +59,13 @@ class Book {
   }
 
   String get typeString {
-    return new RegExp(r'\.([a-z]+)$', caseSensitive: false).firstMatch(type.toString())?.group(1);
+    return new RegExp(r'\.([a-z]+)$', caseSensitive: false)
+        .firstMatch(type.toString())
+        ?.group(1);
+  }
+
+  operator ==(dynamic value) {
+    if (null == value || value is! Book) return false;
+    return value.uri == this.uri;
   }
 }

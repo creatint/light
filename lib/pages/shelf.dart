@@ -51,7 +51,7 @@ class _ShelfState extends State<Shelf> {
 
   void update(Book book) {
     if (indexOf(book) >= 0) {
-      selectedBooks.removeWhere((Book b) => b.uri == book.uri);
+      selectedBooks.removeWhere((Book b) => b == book);
     } else {
       selectedBooks.add(book);
     }
@@ -59,7 +59,7 @@ class _ShelfState extends State<Shelf> {
 
   int indexOf(Book book) {
     if (selectedBooks.length == 0) return -1;
-    return selectedBooks.indexWhere((Book v) => v.uri == book.uri);
+    return selectedBooks.indexWhere((Book v) => v == book);
   }
 
   void handleOnTap(Book book) {

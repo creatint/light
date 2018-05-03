@@ -69,7 +69,7 @@ class BookService {
     Map<String, Book> books = getBooks();
     int start = books.length;
     list.forEach((Book v) {
-      books.removeWhere((_, Book book) => book.uri == v.uri);
+      books.removeWhere((_, Book book) => book == v);
     });
     _books = books;
     Map<String, dynamic> jsons = <String, dynamic>{};
