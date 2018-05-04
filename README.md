@@ -1,37 +1,29 @@
-# Light
+# 📖 Light
 
 ![Light logo](https://user-images.githubusercontent.com/17924777/39092072-762deace-4636-11e8-8acd-447a03c7556e.png)
 
-轻小说阅读器。
+Light is a light novel e-reader build with Flutter, welcome star and fork, expect your advices 。( •̀ ω •́ )✧
 
-Light novel reader.
-
-Version: 0.0.3
-
-## Screeshot
-pagination | import local books 
-:-------------------------:|:-------------------------:
-![分页显示](https://user-images.githubusercontent.com/17924777/39093416-24e27484-4652-11e8-9eaa-96b610508d80.gif) | ![本地导入](https://user-images.githubusercontent.com/17924777/39093132-18904792-464d-11e8-9bda-4f30abec0504.gif)
+[中文版](README-zh.md)
 
 ## Features
 
-- [ ] EPub
-- [ ] Utf-8
-- [ ] Gb2312
-- [ ] Latin-1
-- [ ] Font size, line height
-- [ ] Themes
+- [x] Import local books
+- [ ] Suport utf-8
+- [ ] Suport latin-1
+- [ ] Suport ePub
+- [ ] Suport gb2312
+- [ ] Text style
+- [ ] Multi themes
 - [ ] Day mode, night mode
-- [ ] Book resources
-- [ ] Local search
+- [ ] Search in shelf
 - [ ] Online search
-- [ ] Import local books
 - [ ] Import books by wifi
 - [ ] Advertisement
 - [ ] Friends chat
 - [ ] Share books
 - [ ] Text to speech
-- [ ] User auth
+- [ ] User system
 - [ ] Cloud
 
 ## Usage
@@ -49,9 +41,9 @@ Email: creatint@163.com
 
 QQ: 565864175
 
-编程交流群: [![编程技术交流](https://pub.idqqimg.com/wpa/images/group.png)](//shang.qq.com/wpa/qunwpa?idkey=b34e5d3956950dc053efdd7aef63ef75151c01cfff48a951c8fc53d6349b454a)
+QQ Group for coding: [![](https://pub.idqqimg.com/wpa/images/group.png)](//shang.qq.com/wpa/qunwpa?idkey=b34e5d3956950dc053efdd7aef63ef75151c01cfff48a951c8fc53d6349b454a)
 
-二次元交流群: [![Yotaku](https://pub.idqqimg.com/wpa/images/group.png)](//shang.qq.com/wpa/qunwpa?idkey=2fea46b70c9a73fcbfedd08ee64ed9d6d8c554baa63dc2402082226675e825e7)
+QQ Group for ACGN: [![Yotaku](https://pub.idqqimg.com/wpa/images/group.png)](//shang.qq.com/wpa/qunwpa?idkey=2fea46b70c9a73fcbfedd08ee64ed9d6d8c554baa63dc2402082226675e825e7)
 
 
 ## License
