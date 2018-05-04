@@ -1,4 +1,4 @@
-# Light
+# 📖 Light
 
 ![Light logo](https://user-images.githubusercontent.com/17924777/39092072-762deace-4636-11e8-8acd-447a03c7556e.png)
 
