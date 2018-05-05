@@ -1,4 +1,4 @@
-
+const test_key = 'test';
 /// the directory name of thie app
 const app_path = 'Yotaku';
 
