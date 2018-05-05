@@ -12,7 +12,8 @@ class SystemService {
   static SystemService _cache;
 
   SystemService._internal({@required SharedPreferences prefs})
-      : _prefs = prefs,
+      : assert(null != prefs),
+        _prefs = prefs,
         _streamController = new StreamController<dynamic>.broadcast();
 
   factory SystemService({SharedPreferences prefs}) {
