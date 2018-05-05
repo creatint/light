@@ -104,7 +104,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "33ad5411ad5da278412ee0f25a9a083a8229225b"
+      resolved-ref: "1a9ae0d64aba909598717e4798170f2e47a8548a"
       url: "https://github.com/creatint/dart-epub-cn"
     source: git
     version: "1.2.9"

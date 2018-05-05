@@ -34,6 +34,17 @@ flutter:
 
   assets:
    - assets/images/logo.png
+   - assets/background/bg1.png
+   - assets/background/bg2.png
+   - assets/background/bg3.png
+   - assets/background/bg4.png
+   - assets/background/bg5.png
+   - assets/background/bg6.png
+   - assets/background/bg7.jpg
+   - assets/background/bg8.png
+   - assets/background/bg9.png
+   - assets/background/bg10.png
+   - assets/background/bg11.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:
