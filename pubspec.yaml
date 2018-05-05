@@ -15,7 +15,9 @@ dependencies:
   path: "^1.5.1"
   html: "^0.13.3"
   epub:
-    git: https://github.com/creatint/dart-epub-cn
+    git:
+      url: https://github.com/creatint/dart-epub-cn
+      ref: e414f4f018d9b5c6239e9a391a01bf6ef679a5d2
 
 dev_dependencies:
   flutter_test:

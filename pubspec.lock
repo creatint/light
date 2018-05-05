@@ -103,8 +103,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "1a9ae0d64aba909598717e4798170f2e47a8548a"
+      ref: e414f4f018d9b5c6239e9a391a01bf6ef679a5d2
+      resolved-ref: e414f4f018d9b5c6239e9a391a01bf6ef679a5d2
       url: "https://github.com/creatint/dart-epub-cn"
     source: git
     version: "1.2.9"
