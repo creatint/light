@@ -12,3 +12,4 @@ build/
 
 *.log
 
+test/styles.json
