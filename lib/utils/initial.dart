@@ -61,7 +61,7 @@ Future<Null> _checkInstall(
   int launchTimes = service.getInt('launchTimes');
   if (null != launchTimes && launchTimes > 0) {
     /// update launch times
-    print('lancun times is $launchTimes');
+    print('launch times is $launchTimes');
     launchTimes += 1;
     service.setInt('launchTimes', launchTimes);
   } else {

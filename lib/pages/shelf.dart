@@ -35,16 +35,16 @@ class _ShelfState extends State<Shelf> {
   }
 
   void handleRefresh(dynamic event) {
-    print('handleRefresh');
+    print('handleRefresh1');
     if (null != event && event is List && event.isNotEmpty) {
       if ('refreshShelf' == event[0]) {
-        print('handleRefresh');
-
-        print(service.bookService.getBooks().values.toList());
-        setState(() {
-          books = service.bookService.getBooks().values.toList();
-          print(books.first.toJson());
-        });
+        print('handleRefresh2');
+        var data = service.bookService.getBooks()?.values?.toList();
+        if (null != data) {
+          setState(() {
+            books = data;
+          });
+        }
       }
     }
   }
@@ -165,6 +165,7 @@ class _ShelfState extends State<Shelf> {
 
   @override
   Widget build(BuildContext context) {
+    print(books);
     return new Scaffold(
       appBar: new AppBar(
         leading: new IconButton(
@@ -182,13 +183,13 @@ class _ShelfState extends State<Shelf> {
       body: new Stack(
         children: <Widget>[
           new Offstage(
-            offstage: books.isNotEmpty,
+            offstage: null != books && books.isNotEmpty,
             child: new Center(
               child: new Text('Empty'),
             ),
           ),
           new Offstage(
-            offstage: books.isEmpty,
+            offstage: null == books || books.isEmpty,
             child: new Column(
               children: <Widget>[
                 new Expanded(
