@@ -1,7 +1,7 @@
 import 'package:flutter/painting.dart';
 import 'package:light/models/style.dart';
 
-List<Map<String, dynamic>> list = <Map<String, dynamic>>[
+List<Map<String, dynamic>> jsons = <Map<String, dynamic>>[
   /// pure color
   {
     'backgroundType': BackgroundType.color.toString(),

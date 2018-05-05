@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,7 +22,8 @@ void main() {
     SharedPreferences preferences;
     SystemService service;
     List<Style> styles;
-    List<Map<String, dynamic>> jsons;
+    List<Style> newStyles;
+    List<dynamic> newJsons;
 
     setUp(() async {
       channel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -33,17 +36,26 @@ void main() {
       preferences = await SharedPreferences.getInstance();
       service = new SystemService(prefs: preferences);
 
-      styles = list.map((v) => new Style.fromJson(v)).toList();
-      jsons = styles.map((v) => v.toJson()).toList();
+      /// put json to file
+      File file = new File('test/styles.json');
+      file.writeAsStringSync(json.encode(jsons));
+
+      /// read json from file
+      newJsons = json.decode(file.readAsStringSync());
+
+      /// get styles from json
+      styles = jsons.map((v) => new Style.fromJson(v)).toList();
+
+      /// get new styles from new json
+      newStyles = newJsons.map((v) => new Style.fromJson(v)).toList();
     });
 
-    test('read style json', () {
-      expect(jsons.length, equals(list.length));
+    test('put json to file', () {
+      expect(newJsons.toString(), equals(jsons.toString()));
     });
 
-//    test('to json', () async {
-//      expect(preferences.get(test_key), null);
-//    });
-
+    test('get styles from json', (){
+      expect(newStyles, equals(styles));
+    });
   });
 }
