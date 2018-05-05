@@ -11,6 +11,9 @@ const books_progress = 'bookProgress';
 /// the key used to store styles
 const styles_key = 'styles';
 
+/// id of selected style
+const style_current_id = 'styleCurrentId';
+
 /// text styles
 const font_size = 'fontSize';
 const font_weight = 'fontWeight';
