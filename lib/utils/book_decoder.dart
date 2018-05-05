@@ -30,11 +30,15 @@ class BookDecoder {
           data = await compute(_decodeText, book.uri);
           break;
         case FileType.EPUB:
-        // todo: decode in second isolate
-//        Map<String, dynamic> data =
-//        await compute<String, Future<Map<String, dynamic>>>(
-//            decodeEpub, book.uri);
-          data = await _decodeEpub(book.uri);
+          // todo: decode in second isolate
+          data = await compute<String, Map<String, dynamic>>(
+              _decodeEpub, book.uri);
+          print(data['chapters']);
+          if (null != data['chapters']) {
+            data['chapters'] = jsonDecode(data['chapters'])
+                .map<Chapter>((value) => new Chapter.fromJson(value))
+                .toList();
+          }
           break;
         default:
       }
@@ -86,26 +90,27 @@ Map<String, dynamic> _decodeText(String uri) {
   }
 }
 
-Future<Map<String, dynamic>> _decodeEpub(String uri) async {
+Map<String, dynamic> _decodeEpub(String uri) {
   try {
     print('decode epub...');
     File targetFile = new File(uri);
-    List<int> bytes = await targetFile.readAsBytes();
+    List<int> bytes = targetFile.readAsBytesSync();
     String content = '';
-    List<Chapter> chapters = <Chapter>[];
+    List<Map> chapters = <Map>[];
 
     // Opens a book and reads all of its content into the memory
-    EpubBook epubBook = await EpubReader.readBook(bytes);
+    EpubBook epubBook = EpubReader.readBookSync(bytes);
 
 //    content = epubBook.Content.toString();
     epubBook.Chapters?.forEach((EpubChapter chapter) {
       if (null != chapter) {
         dom.Document doc = parse(chapter.HtmlContent);
         String text = doc.body.text;
-        chapters.add(new Chapter(
-            title: chapter.Title,
-            offset: content?.length,
-            length: text?.length));
+        chapters.add({
+          'title': chapter.Title,
+          'offset': content?.length,
+          'length': text?.length
+        });
         content += text;
       }
 
@@ -115,7 +120,7 @@ Future<Map<String, dynamic>> _decodeEpub(String uri) async {
 //    return body.outerHtml;
 //      return body.text;
     });
-    return {'content': content, 'chapters': chapters};
+    return {'content': content, 'chapters': jsonEncode(chapters).toString()};
   } catch (e) {
     print('decode epub failed, e: $e');
     throw e;
