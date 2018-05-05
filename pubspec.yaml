@@ -13,6 +13,7 @@ dependencies:
   simple_permissions: "^0.1.2"
   path_provider: "^0.4.0"
   path: "^1.5.1"
+  html: "^0.13.3"
   epub:
     git: https://github.com/creatint/dart-epub-cn
 
@@ -33,6 +34,7 @@ flutter:
   uses-material-design: true
 
   assets:
+   - assets/styles.json
    - assets/images/logo.png
    - assets/background/bg1.png
    - assets/background/bg2.png
