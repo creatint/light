@@ -14,8 +14,6 @@ class _MyDrawerHeaderState extends State<MyDrawerHeader> {
 }
 
 class MyDrawer extends StatefulWidget {
-
-
   _MyDrawerState createState() => new _MyDrawerState();
 }
 
@@ -77,7 +75,10 @@ class _MyDrawerState extends State<MyDrawer> {
       aboutBoxChildren: <Widget>[
         new RichText(
             text: new TextSpan(children: <TextSpan>[
-          new TextSpan(style: aboutTextStyle, text: 'Light是一个开源的轻小说阅读APP。'),
+          new TextSpan(
+              style: aboutTextStyle,
+              text: 'Light是一个开源的轻小说阅读器，旨在为才女绅士们提供飞'
+                  '一般的阅读体验，因为light，所以fly。'),
           new TextSpan(style: aboutTextStyle, text: '点击查看'),
           new LinkTextSpan(
               url: 'https://github.com/creatint/light',
