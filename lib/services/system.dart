@@ -1,12 +1,10 @@
 import 'dart:io';
 import 'dart:async';
-import 'package:flutter/foundation.dart'
-    show required, TargetPlatform, defaultTargetPlatform;
+import 'package:flutter/foundation.dart' show required;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_permissions/simple_permissions.dart';
 import 'book.dart';
 import 'file.dart';
-import '../models/book.dart';
 
 class SystemService {
   static SystemService _cache;
@@ -80,7 +78,9 @@ class SystemService {
 
   /// device's platform
   bool get isAndroid => Platform.isAndroid;
+
   bool get isIOS => Platform.isIOS;
+
   bool get isFuchsia => Platform.isFuchsia;
 
   /// Check a [permission] and return a [Future] with the result
