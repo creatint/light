@@ -77,7 +77,7 @@ class _MyDrawerState extends State<MyDrawer> {
             text: new TextSpan(children: <TextSpan>[
           new TextSpan(
               style: aboutTextStyle,
-              text: 'Light是一个开源的轻小说阅读器，旨在为才女绅士们提供飞'
+              text: 'Light是一个开源的轻小说阅读器，旨在为淑女绅士们提供飞'
                   '一般的阅读体验，因为light，所以fly。'),
           new TextSpan(style: aboutTextStyle, text: '点击查看'),
           new LinkTextSpan(
