@@ -1,13 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import '../services/system.dart';
 import '../utils/constants.dart';
 
 enum BackgroundType { color, image, texture }
 
 class Style {
-  Style._internal({
-    this.id,
+  const Style({
     this.backgroundType,
     this.fontColor,
     this.backgroundColor,
@@ -15,52 +16,94 @@ class Style {
   });
 
   Style.fromJson(Map<String, dynamic> json)
-      : this.id = int.parse(json['id']),
-        this.backgroundType = BackgroundType.values
-                .firstWhere((v) => v.toString() == json['backgroundType']) ??
-            BackgroundType.color,
-        this.fontColor = new Color(int.parse(json['font_color'])),
-        this.backgroundColor = new Color(int.parse(json['background_color'])),
-        this.imageUri = json['image_uri'];
+      : this.backgroundType = BackgroundType.values.firstWhere(
+            (v) => v.toString() == json['backgroundType'],
+            orElse: () => BackgroundType.color),
+        this.fontColor =
+            null != json['fontColor'] ? new Color(json['fontColor']) : null,
+        this.backgroundColor = null != json['backgroundColor']
+            ? new Color(json['backgroundColor'])
+            : null,
+        this.imageUri = json['imageUri'];
 
-  operator [](int index) {
-    if (index <= (_styles.length - 1)) {
-      return _styles[index];
-    }
-    return null;
+  Map<String, dynamic> toJson() {
+    return {
+      'backgroundType': backgroundType.toString(),
+      'backgroundColor': backgroundColor?.value ?? null,
+      'fontColor': fontColor.value,
+      'imageUri': imageUri
+    };
   }
 
-  static List<Style> init() {
-    if (null == _styles) {
-      List<String> raw = service.getStringList(styles_key);
-      if (null == raw || raw.isEmpty) {
-        _styles = [
-          new Style._internal(
-              id: 0,
-              backgroundColor: const Color(0xffffffff),
-              fontColor: const Color(0xff424142),
-              backgroundType: BackgroundType.color)
-        ];
+  static int _currentId;
+
+  static int get currentId {
+    if (null == _currentId) {
+      if (null != service.getInt(style_current_id)) {
+        _currentId = service.getInt(style_current_id);
       } else {
-        _styles = raw
-            .map((String value) => new Style.fromJson(json.decode(value)))
-            .toList();
+        currentId = 0;
+        service.setInt(style_current_id, currentId);
       }
     }
-    return _styles;
+    return _currentId;
+  }
+
+  static set currentId(int id) {
+    _currentId = id;
+    service.setInt(style_current_id, currentId);
+  }
+
+  static Future<List<Style>> init() async {
+    if (null == values || values.isEmpty) {
+      List<dynamic> json;
+      if (null != service.getString(styles_key)) {
+        json = jsonDecode(service.getString(styles_key));
+      }
+      if (null == json || json.isEmpty) {
+        /// get styles from assets
+        String raw = await rootBundle.loadString('assets/styles.json');
+        if (null != raw && raw.isNotEmpty) {
+          json = jsonDecode(raw);
+        }
+        if (null == json || json.isEmpty) {
+          values = [
+            new Style(
+                backgroundColor: const Color(0xffffffff),
+                fontColor: const Color(0xff424142),
+                backgroundType: BackgroundType.color)
+          ];
+        } else {
+          values =
+              json.map<Style>((value) => new Style.fromJson(value)).toList();
+        }
+        if (null != values) {
+          json.clear();
+          values.forEach((Style value) {
+            json.add(value.toJson());
+          });
+          service.setString(styles_key, jsonEncode(json)?.toString());
+        }
+      } else {
+        values =
+            json.map((value) => new Style.fromJson(value)).toList();
+      }
+
+    }
+    return values;
   }
 
   static SystemService service = new SystemService();
 
-  static List<Style> _styles;
+  static List<Style> values;
 
-  final int id;
   final BackgroundType backgroundType;
   final Color fontColor;
   final Color backgroundColor;
   final String imageUri;
 
-  BoxFit get fit => backgroundColor == BackgroundType.image
+  // TODO: cover ? none ?
+  BoxFit get fit => backgroundType == BackgroundType.image
       ? BoxFit.cover
       : backgroundType == BackgroundType.texture ? BoxFit.none : null;
 
@@ -125,8 +168,8 @@ class Style {
     if (null == _fontWeight) {
       if (null != service.getString(font_weight)) {
         _fontWeight = FontWeight.values.firstWhere(
-                (v) => v.toString() == service.getString(font_weight)) ??
-            FontWeight.normal;
+            (v) => v.toString() == service.getString(font_weight),
+            orElse: () => FontWeight.normal);
       } else {
         _fontWeight = FontWeight.normal;
       }
@@ -200,5 +243,13 @@ class Style {
   static set textAlign(TextAlign value) {
     _textAlign = value;
     service.setString(text_align, value.toString());
+  }
+
+  int get hashCode =>
+      hashValues(backgroundType, backgroundColor, fontColor, imageUri);
+
+  bool operator ==(other) {
+    if (other is! Style) return false;
+    return hashCode == other.hashCode;
   }
 }
