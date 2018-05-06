@@ -22,4 +22,7 @@ const font_family = 'fontFamily';
 const text_direction = 'textDirection';
 const text_align = 'textAlign';
 
+/// the suffix used to store paging data
+const paging_data_suffix = '_paging';
+
 
