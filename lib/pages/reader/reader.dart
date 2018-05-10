@@ -89,8 +89,7 @@ class _ReaderState extends State<Reader> {
         // open the menu
         isShowMenu = true;
         handleShowMenu().then((value) {
-          if (true == value) {
-          }
+          if (true == value) {}
         });
       }
     }
@@ -123,7 +122,16 @@ class _ReaderState extends State<Reader> {
             ),
           ),
           new Expanded(
-            child: new Text(lightEngine.getContent(index), style: Style.textStyle,),
+            child: new Container(
+              color: Colors.yellow,
+              child: new Text(
+                lightEngine.getContent(index),
+                style: Style.textStyle,
+                overflow: TextOverflow.clip,
+                maxLines: lightEngine.maxLines,
+                textScaleFactor: 1.0,
+              ),
+            ),
           ),
           new SizedBox(
             height: 30.0,
@@ -142,51 +150,54 @@ class _ReaderState extends State<Reader> {
   void initState() {
     super.initState();
     SystemChrome.setEnabledSystemUIOverlays([]);
-    lightEngine =
-        new LightEngine(book: widget.book, stateSetter: setState);
-    pageControllerFuture = lightEngine.controller;
+    lightEngine = new LightEngine(book: widget.book, stateSetter: setState);
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: new Container(
-        color: Colors.black45,
-        child: new FutureBuilder(
-            future: pageControllerFuture,
-            builder:
-                (BuildContext context, AsyncSnapshot<PageController> snapshot) {
-              if (ConnectionState.waiting == snapshot.connectionState) {
-                return new Center(
-                  child: new TextIndicator(),
-                );
-              } else if (ConnectionState.done == snapshot.connectionState &&
-                  !snapshot.hasError &&
-                  snapshot.hasData &&
-                  snapshot.data is PageController) {
-                pageController = snapshot.data;
-                return new LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraint) {
-                    return new PageView.custom(
+      body: new LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraint) {
+          lightEngine.pageSize =
+              new Size(constraint.maxWidth - 40.0, constraint.maxHeight - 60.0);
+          if (null == pageControllerFuture) {
+            pageControllerFuture = lightEngine.controller;
+          }
+          return new Container(
+            color: Colors.black45,
+            child: new FutureBuilder(
+                future: pageControllerFuture,
+                builder: (BuildContext context,
+                    AsyncSnapshot<PageController> snapshot) {
+                  if (ConnectionState.waiting == snapshot.connectionState) {
+                    return new Center(
+                      child: new TextIndicator(),
+                    );
+                  } else if (ConnectionState.done == snapshot.connectionState &&
+                      !snapshot.hasError &&
+                      snapshot.hasData &&
+                      snapshot.data is PageController) {
+                    pageController = snapshot.data;
+                    return PageView.custom(
                         childrenDelegate: new SliverChildBuilderDelegate(
                             pageBuilder,
                             childCount: lightEngine.childCount,
                             addRepaintBoundaries: false,
                             addAutomaticKeepAlives: false));
-                  },
-                );
-              } else {
-                return new Container(
-                  padding: const EdgeInsets.all(20.0),
-                  child: new Center(
-                    child: new Text(
-                      '解析失败：${snapshot.error}',
-                      style: waitingTextStyle,
-                    ),
-                  ),
-                );
-              }
-            }),
+                  } else {
+                    return new Container(
+                      padding: const EdgeInsets.all(20.0),
+                      child: new Center(
+                        child: new Text(
+                          '解析失败：${snapshot.error}',
+                          style: waitingTextStyle,
+                        ),
+                      ),
+                    );
+                  }
+                }),
+          );
+        },
       ),
     );
   }

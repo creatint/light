@@ -165,7 +165,6 @@ class _ShelfState extends State<Shelf> {
 
   @override
   Widget build(BuildContext context) {
-    print(books);
     return new Scaffold(
       appBar: new AppBar(
         leading: new IconButton(

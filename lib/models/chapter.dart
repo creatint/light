@@ -6,4 +6,9 @@ class Chapter {
   final String title;
   final int offset;
   final int length;
+
+  Chapter.fromJson(Map value)
+      : title = value['title'] as String,
+        offset = value['offset'] as int,
+        length = value['length'] as int;
 }

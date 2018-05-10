@@ -54,7 +54,7 @@ class Style {
     service.setInt(style_current_id, currentId);
   }
 
-  static Future<List<Style>> init() async {
+  static FutureOr<List<Style>> init() async {
     if (null == values || values.isEmpty) {
       List<dynamic> json;
       if (null != service.getString(styles_key)) {
@@ -93,7 +93,14 @@ class Style {
     return values;
   }
 
-  static SystemService service = new SystemService();
+  static SystemService _service;
+
+  static SystemService get service {
+    if (null == _service) {
+      _service = new SystemService();
+    }
+    return _service;
+  }
 
   static List<Style> values;
 
@@ -154,13 +161,15 @@ class Style {
     if (null == _fontSize) {
       _fontSize = service.getDouble(font_size) ?? 20.0;
     }
+    return 18.0;
     return _fontSize;
   }
 
   static double get height {
     if (null == _height) {
-      _height = service.getDouble(line_height) ?? 1.2;
+      _height = service.getDouble(line_height) ?? 2.0;
     }
+    return 1.0;
     return _height;
   }
 
@@ -179,7 +188,7 @@ class Style {
 
   static String get fontFamily {
     if (null == _fontFamily) {
-      _fontFamily = service.getString(font_family) ?? null;
+      _fontFamily = service.getString(font_family) ?? 'HYQH';
     }
     return _fontFamily;
   }

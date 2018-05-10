@@ -32,8 +32,7 @@ class BookItem extends StatelessWidget {
         children: <Widget>[
           new Expanded(
             child: new Container(
-              color: allPalettes[new Random(book.title.hashCode).nextInt(1000) %
-                      (allPalettes.length - 1)]
+              color: allPalettes[book.title.hashCode % (allPalettes.length - 1)]
                   .primary[200],
               child: new Stack(
                 children: <Widget>[
@@ -56,7 +55,6 @@ class BookItem extends StatelessWidget {
                       ),
                     ),
                   ),
-
                 ],
               ),
             ),

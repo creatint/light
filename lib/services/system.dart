@@ -16,7 +16,10 @@ class SystemService {
 
   factory SystemService({SharedPreferences prefs}) {
     if (null == _cache) {
+      print('initiate SystemService');
       _cache = new SystemService._internal(prefs: prefs);
+    } else {
+      print('SystemService initiated already');
     }
     return _cache;
   }

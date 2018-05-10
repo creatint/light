@@ -7,6 +7,7 @@ import 'package:html/parser.dart';
 import 'package:html/dom.dart' as dom;
 import '../models/book.dart';
 import '../models/chapter.dart';
+import '../models/section.dart';
 import '../utils/utils.dart';
 
 class BookDecoder {
@@ -51,11 +52,28 @@ class BookDecoder {
         content: data['content'], chapters: data['chapters']);
   }
 
-  String getSection(int offset, int length) {
-    if (null == content || (offset + length) > content.length) {
+  int get maxLength => content?.length;
+
+  dynamic getSection(int offset, int length, {bool raw: false}) {
+    print('get section offset=$offset length=$length');
+    print('content.length = ${content.length}');
+    String text;
+    if (!(offset >= 0) || !(length > 0)) {
       return null;
     }
-    return content.substring(offset, length);
+    if (offset >= maxLength) {
+      return null;
+    }
+    if (offset + length >= maxLength) {
+      text = content.substring(offset, maxLength);
+    } else {
+      text = content.substring(offset, offset + length);
+    }
+    if (true == raw) {
+      return text;
+    } else {
+      return new Section(title: 'title...', content: text);
+    }
   }
 
   /// free the memory

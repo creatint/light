@@ -6,7 +6,7 @@ import '../services/system.dart';
 import '../utils/utils.dart';
 import '../utils/constants.dart';
 import '../models/book.dart';
-import '../models/record.dart';
+import '../models/pagination.dart';
 
 class BookService {
   static BookService _cache;
@@ -26,6 +26,9 @@ class BookService {
 
   /// get books from prefs
   Map<String, Book> getBooks() {
+    if (null != _books) {
+      return _books;
+    }
     String booksJson = service.getString(books_key);
     if (null == booksJson || booksJson.isEmpty) {
       return null;
@@ -116,21 +119,53 @@ class BookService {
     return _settings;
   }
 
-  Map<String, Map<String, int>> _booksProgress;
+  /// the offset of book being read
+  Map<String, int> _offsets;
+
+  Map<String, int> get offsets {
+    if (null == _offsets) {
+      String raw = service.getString(books_progress);
+
+      if (null == raw) {
+        _offsets = <String, int>{};
+      } else {
+        _offsets = json.decode(raw).cast<String, int>();
+      }
+    }
+    return _offsets;
+  }
+
+  /// set offset for book
+  void setOffset(Book book, int offset) {
+    assert(offset >= 0);
+    assert(null != book);
+    _offsets[book.uri] = offset;
+    service.setString(books_progress, json.encode(_offsets).toString());
+  }
 
   /// get the progress of reading
-  Map<String, int> getBookProgress(Book book) {
+  int getOffset(Book book) {
     assert(null != book);
-    String raw = service.getString(books_progress);
-    if (null == raw) {
-      _booksProgress = {
-        book.uri: {'offset': 0, 'index': 0}
-      };
-    } else if (_booksProgress.containsKey(book.uri)) {
-      _booksProgress[book.uri] = {'offset': 0, 'index': 0};
+    if (!offsets.containsKey(book.uri)) {
+      setOffset(book, 0);
     }
-    service.setString(books_progress, json.encode(_booksProgress));
+    return _offsets[book.uri];
+  }
 
-    return _booksProgress[book.uri];
+
+  /// Get paging data of the book.
+  Map<String, List<List<int>>> getPagingData(Book book) {
+    assert(null != book);
+    if (null == book) return null;
+    String raw = service.getString(book.uri + paging_data_suffix);
+    if (null == raw || raw.isEmpty) {
+      return null;
+    }
+    var data = json.decode(raw).cast<Map<String, List<List<int>>>>();
+    return data[book.uri];
+  }
+
+  void setPagingData(Book book, var data) {
+
   }
 }
