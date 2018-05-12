@@ -34,6 +34,11 @@ flutter build apk --release
 ```
 本项目基于Flutter构建，了解Flutter请访问[flutter.io](https://flutter.io/)。
 
+## Flutter API
+[Flutter API docs](https://docs.flutter.io/)
+
+[Flutter中文文档](https://docs.flutter.kim/)
+
 ## 联系我
 Email：creatint@163.com
 

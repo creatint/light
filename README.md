@@ -36,6 +36,12 @@ flutter build apk --release
 For help getting started with Flutter, view our online
 [documentation](https://flutter.io/).
 
+## Flutter API
+[Flutter API docs](https://docs.flutter.io/)
+
+[Flutter中文文档](https://docs.flutter.kim/)
+
+
 ## Contact
 Email: creatint@163.com
 
@@ -44,7 +50,6 @@ QQ: 565864175
 QQ Group for coding: [![](https://pub.idqqimg.com/wpa/images/group.png)](//shang.qq.com/wpa/qunwpa?idkey=b34e5d3956950dc053efdd7aef63ef75151c01cfff48a951c8fc53d6349b454a)
 
 QQ Group for ACGN: [![Yotaku](https://pub.idqqimg.com/wpa/images/group.png)](//shang.qq.com/wpa/qunwpa?idkey=2fea46b70c9a73fcbfedd08ee64ed9d6d8c554baa63dc2402082226675e825e7)
-
 
 ## License
 Light is available under the GPL-3.0 license. See the [LICENSE](https://github.com/creatint/light/blob/master/LICENSE) file.
